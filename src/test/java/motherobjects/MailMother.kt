@@ -1,0 +1,4 @@
+package motherobjects
+
+class MailMother {
+}
