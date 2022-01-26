@@ -1,4 +1,4 @@
 package response
 
-class BatchResponse (val batch_id: String) {
+data class BatchResponse (var batch_id: String) {
 }

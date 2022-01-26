@@ -1,10 +1,11 @@
-import com.beust.klaxon.Klaxon
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.sendgrid.Response
 import com.sendgrid.helpers.mail.Mail
 import com.sendgrid.helpers.mail.objects.*
-import response.BatchResponse
 import motherobjects.*
 import org.junit.jupiter.api.Test
+import response.BatchResponse
 import utils.TestUtils.Companion.showResponseResult
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -21,6 +22,7 @@ class MailServiceTest {
     private val contentEmail: Content = ContentMother.createContentEmail("text/html", "<h1>Test email</h1>")
     private val zonedDateTime = ZonedDateTime.of(2022, 1, 26, 7, 36, 24, 0, ZoneId.of("UTC"))
     private val toEpochSecond = zonedDateTime.toEpochSecond()
+    private val objectMapper = jacksonObjectMapper()
 
     @Test
     fun sendSimpleEmail() {
@@ -136,9 +138,9 @@ class MailServiceTest {
         mail = Mail(emailFrom, "Test with batch id", emailTo, contentEmail)
 
         val responseBatch = batchService.createBatchId()
-        val responseToObject = Klaxon().parse<BatchResponse>(responseBatch.body)
+        val responseToObject: BatchResponse = objectMapper.readValue(responseBatch.body)
 
-        mail.batchId = responseToObject?.batch_id
+        mail.batchId = responseToObject.batch_id
         mail.sendAt = toEpochSecond
 
         val response = sut.sendEmail(mail)
@@ -151,16 +153,16 @@ class MailServiceTest {
         mail = Mail(emailFrom, "Test with batch id", emailTo, contentEmail)
 
         val responseBatch = batchService.createBatchId()
-        val responseToObject = Klaxon().parse<BatchResponse>(responseBatch.body)
+        val responseToObject: BatchResponse = objectMapper.readValue(responseBatch.body)
 
-        mail.batchId = responseToObject?.batch_id
+        mail.batchId = responseToObject.batch_id
         mail.sendAt = toEpochSecond
 
         val response = sut.sendEmail(mail)
 
         showResponseResult(response)
 
-        val scheduleResponse = scheduleService.cancelSchedule(responseToObject?.batch_id!!)
+        val scheduleResponse = scheduleService.cancelSchedule(responseToObject.batch_id)
 
         showResponseResult(scheduleResponse)
     }
@@ -170,16 +172,16 @@ class MailServiceTest {
         mail = Mail(emailFrom, "Test with batch id", emailTo, contentEmail)
 
         val responseBatch = batchService.createBatchId()
-        val responseToObject = Klaxon().parse<BatchResponse>(responseBatch.body)
+        val responseToObject: BatchResponse = objectMapper.readValue(responseBatch.body)
 
-        mail.batchId = responseToObject?.batch_id
+        mail.batchId = responseToObject.batch_id
         mail.sendAt = toEpochSecond
 
         val response = sut.sendEmail(mail)
 
         showResponseResult(response)
 
-        val scheduleResponse = scheduleService.pauseSchedule(responseToObject?.batch_id!!)
+        val scheduleResponse = scheduleService.pauseSchedule(responseToObject.batch_id)
 
         showResponseResult(scheduleResponse)
     }
