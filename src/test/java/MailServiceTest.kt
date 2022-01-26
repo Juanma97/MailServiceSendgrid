@@ -2,7 +2,7 @@ import com.beust.klaxon.Klaxon
 import com.sendgrid.Response
 import com.sendgrid.helpers.mail.Mail
 import com.sendgrid.helpers.mail.objects.*
-import model.BatchResponse
+import response.BatchResponse
 import motherobjects.*
 import org.junit.jupiter.api.Test
 import utils.TestUtils.Companion.showResponseResult
@@ -14,8 +14,8 @@ class MailServiceTest {
     private val scheduleService: ScheduleService = ScheduleService()
     private lateinit var mail: Mail
     private val subject: String = "Subject Test"
-    private val emailTo: Email = EmailMother.createEmail("juanma.perez@autentia.com", "Juanma Autentia")
-    private val emailFrom: Email = EmailMother.createEmail("juanma97perez@gmail.com", "Juanma Gmail")
+    private val emailTo: Email = EmailMother.createEmail("test@to.com", "Test To")
+    private val emailFrom: Email = EmailMother.createEmail("test@from.com", "Test From")
     private val contentEmail: Content = ContentMother.createContentEmail("text/html", "<h1>Test email</h1>")
 
     @Test
@@ -50,8 +50,8 @@ class MailServiceTest {
     fun sendEmailWithTemplate() {
         mail = Mail(emailFrom, subject, emailTo, contentEmail)
 
-        mail.personalization[0].addDynamicTemplateData("username", "Juanma")
-        mail.templateId = "d-6409e016383c405383cc9f57b634b977"
+        mail.personalization[0].addDynamicTemplateData("username", "MyUserName")
+        mail.templateId = "d-6409e016383c405383cc9f57b"
 
         val response = sut.sendEmail(mail)
 
@@ -62,15 +62,15 @@ class MailServiceTest {
     fun sendEmailWithPersonalization() {
         mail = Mail(emailFrom, subject, emailTo, contentEmail)
 
-        val personalization0 = PersonalizationMother.createPersonalization("juanma.perez@autentia.com",
-            "juanma97@outlook.com", "Pepito", "Asunto 1")
+        val personalization0 = PersonalizationMother.createPersonalization("test@to.com",
+            "test@cc.com", "Pepito", "Asunto 1")
         mail.addPersonalization(personalization0)
 
-        val personalization1 = PersonalizationMother.createPersonalization("juanma97@outlook.com",
-            "juanma97perez@gmail.com", "Juanma", "Asunto 2")
+        val personalization1 = PersonalizationMother.createPersonalization("test@to.com",
+            "test@cc.com", "Miguel", "Asunto 2")
         mail.addPersonalization(personalization1)
 
-        mail.templateId = "d-6409e016383c405383cc9f57b634b977"
+        mail.templateId = "d-6409e016383c405383cc9f57b"
 
         val response = sut.sendEmail(mail)
 
@@ -114,13 +114,13 @@ class MailServiceTest {
     fun sendEmailMultipleRecipients() {
         mail = Mail(emailFrom, subject, emailTo, contentEmail)
 
-        val emailsTo = listOf("juanma.perez@autentia.com", "magi61012@gmail.com", "juanma97@outlook.com", "juanma97perez@gmail.com")
+        val emailsTo = listOf("test@user1.com", "test@user2.com", "test@user3.com", "test@user4.com")
 
         val personalization = PersonalizationMother.createPersonalizationWithMultipleRecipients(emailsTo,
-            "juanma97@outlook.com", "Pepito", "Asunto 1")
+            "test@cc.com", "Pepito", "Asunto 1")
         mail.addPersonalization(personalization)
 
-        mail.templateId = "d-6409e016383c405383cc9f57b634b977"
+        mail.templateId = "d-6409e016383c405383cc9f57b"
 
         val response = sut.sendEmail(mail)
 
