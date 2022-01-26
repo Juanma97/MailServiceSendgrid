@@ -6,6 +6,8 @@ import response.BatchResponse
 import motherobjects.*
 import org.junit.jupiter.api.Test
 import utils.TestUtils.Companion.showResponseResult
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 class MailServiceTest {
 
@@ -17,6 +19,8 @@ class MailServiceTest {
     private val emailTo: Email = EmailMother.createEmail("test@to.com", "Test To")
     private val emailFrom: Email = EmailMother.createEmail("test@from.com", "Test From")
     private val contentEmail: Content = ContentMother.createContentEmail("text/html", "<h1>Test email</h1>")
+    private val zonedDateTime = ZonedDateTime.of(2022, 1, 26, 7, 36, 24, 0, ZoneId.of("UTC"))
+    private val toEpochSecond = zonedDateTime.toEpochSecond()
 
     @Test
     fun sendSimpleEmail() {
@@ -135,7 +139,7 @@ class MailServiceTest {
         val responseToObject = Klaxon().parse<BatchResponse>(responseBatch.body)
 
         mail.batchId = responseToObject?.batch_id
-        mail.sendAt = 1643018266
+        mail.sendAt = toEpochSecond
 
         val response = sut.sendEmail(mail)
 
@@ -150,7 +154,7 @@ class MailServiceTest {
         val responseToObject = Klaxon().parse<BatchResponse>(responseBatch.body)
 
         mail.batchId = responseToObject?.batch_id
-        mail.sendAt = 1643016518
+        mail.sendAt = toEpochSecond
 
         val response = sut.sendEmail(mail)
 
@@ -169,7 +173,7 @@ class MailServiceTest {
         val responseToObject = Klaxon().parse<BatchResponse>(responseBatch.body)
 
         mail.batchId = responseToObject?.batch_id
-        mail.sendAt = 1643021291
+        mail.sendAt = toEpochSecond
 
         val response = sut.sendEmail(mail)
 
